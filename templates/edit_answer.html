@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}영상 수정{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2>🎬 영상 정보 수정</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    <!-- 제목 -->
+    <div class="mb-3">
+      <label for="title" class="form-label">제목</label>
+      <input type="text" id="title" name="title" class="form-control" value="{{ video['title'] }}" required>
+    </div>
+
+    <!-- 설명 -->
+    <div class="mb-3">
+      <label for="description" class="form-label">설명</label>
+      <textarea id="description" name="description" class="form-control" rows="4">{{ video['description'] }}</textarea>
+    </div>
+
+    <!-- 썸네일 -->
+    <div class="mb-3">
+      <label class="form-label">현재 썸네일</label><br>
+      {% if video['thumbnail'] %}
+        <img src="{{ url_for('static', filename='thumbnails/' + video['thumbnail']) }}" class="img-thumbnail mb-2" style="max-width: 200px;">
+      {% else %}
+        <p class="text-muted">썸네일 없음</p>
+      {% endif %}
+      <label for="thumbnail" class="form-label mt-2">새 썸네일 업로드 (선택)</label>
+      <input type="file" id="thumbnail" name="thumbnail" class="form-control" accept="image/*">
+    </div>
+
+    <!-- 자료 파일 -->
+    <div class="mb-3">
+      <label class="form-label">현재 학습자료</label><br>
+      {% if video['material_file'] %}
+        <a href="{{ url_for('static', filename='materials/' + video['material_file']) }}" download>
+          📄 {{ video['material_file'] }}
+        </a>
+      {% else %}
+        <p class="text-muted">자료 없음</p>
+      {% endif %}
+      <label for="material" class="form-label mt-2">새 학습자료 업로드 (선택)</label>
+      <input type="file" id="material" name="material" class="form-control" accept=".pdf,.ppt,.pptx,.zip">
+    </div>
+
+    <!-- 제출 -->
+    <div class="d-flex justify-content-end mt-4">
+      <a href="{{ url_for('premium_video') if video['is_premium'] else url_for('free_video') }}" class="btn btn-secondary me-2">취소</a>
+      <button type="submit" class="btn btn-primary">수정 완료</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}홈 | 메인페이지{% endblock %}
+{% block content %}
+<style>
+  .home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+
+  .nickname-box {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #555;
+  }
+
+  .announcement-box {
+    background: #fff6e5;
+    border-left: 5px solid #ffc107;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-left: 30px;
+    flex-grow: 1;
+  }
+
+  .announcement-box h5 {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #d17f00;
+  }
+
+  .announcement-actions {
+    margin-top: 10px;
+  }
+
+  .btn-outline-custom {
+    width: 100%;
+    background-color: white;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .btn-outline-custom:hover {
+    color: white !important;
+  }
+
+  .btn-outline-primary:hover {
+    background-color: #0d6efd;
+  }
+  .btn-outline-success:hover {
+    background-color: #198754;
+  }
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+  }
+  .btn-outline-warning:hover {
+    background-color: #ffc107;
+    color: black !important;
+  }
+  .btn-outline-info:hover {
+    background-color: #0dcaf0;
+  }
+  .btn-outline-dark:hover {
+    background-color: #343a40;
+  }
+
+  .feature-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 15px;
+    padding: 30px;
+    height: 100%;
+    background-color: white;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .feature-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
+  .feature-description {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 20px;
+  }
+
+  .feature-btn {
+    width: 100%;
+  }
+</style>
+
+<div class="container mt-5">
+  <div class="home-header">
+    <div>
+      <h2>🎬 환영합니다!</h2>
+      {% if session.user %}
+        {% set role_display = {
+          'superadmin': '총관리자',
+          'admin': '선생님',
+          'user': '학생'
+        } %}
+        <div class="nickname-box">
+          👤 {{ session.user.nickname }} ({{ role_display[session.user.role] }})
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="d-flex flex-column flex-grow-1">
+      {% if announcement %}
+      <div class="announcement-box">
+        <h5>📢 공지사항</h5>
+        <div><strong>{{ announcement.title }}</strong></div>
+        <div style="font-size: 0.9rem; color: #444;">{{ announcement.content }}</div>
+      </div>
+      {% endif %}
+      {% if session.user and session.user.role == 'superadmin' %}
+        <div class="announcement-actions text-end mt-2">
+          <a href="/announcement/write" class="btn btn-sm btn-warning">공지 등록</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-title">무료 영상</div>
+        <div class="feature-description">로그인한 사용자라면 누구나 시청할 수 있어요.</div>
+        <a href="/free-video" class="btn btn-outline-primary btn-outline-custom feature-btn">학습 하기</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-title">프리미엄 영상</div>
+        <div class="feature-description">대치동 과외쌤들의 수업을 경험해보세요.</div>
+        <a href="/premium-video" class="btn btn-outline-warning btn-outline-custom feature-btn">학습 하기</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-title">Q&A 게시판</div>
+        <div class="feature-description">학업에 관한 모든 질문에 대한 답변을 받아보세요.</div>
+        <a href="/qna" class="btn btn-outline-secondary btn-outline-custom feature-btn">Q&A 바로가기</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-title">선생님 소개</div>
+        <div class="feature-description">사이트에 등록된 선생님들을 확인해보세요.</div>
+        <a href="/teachers" class="btn btn-outline-info btn-outline-custom feature-btn">확인 하기</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-title">사이트 소개</div>
+        <div class="feature-description">이 사이트가 어떤 곳인지 소개합니다.</div>
+        <a href="/about" class="btn btn-outline-dark btn-outline-custom feature-btn">바로가기</a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-title">자료 게시판</div>
+        <div class="feature-description">선생님들의 자료를 내려받을 수 있습니다.</div>
+        <a href="/resources" class="btn btn-outline-success btn-outline-custom feature-btn">들어가기</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

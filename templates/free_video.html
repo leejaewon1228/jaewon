@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}무료 영상{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">🎥 무료 영상</h2>
+    <a href="/" class="btn btn-outline-secondary btn-sm">홈으로</a>
+  </div>
+
+  {% if session.user.role in ['admin', 'teacher', 'superadmin'] %}
+    <a href="{{ url_for('upload_video', video_type='free') }}" class="btn btn-success mb-4">무료 영상 업로드</a>
+  {% endif %}
+
+  {% if videos %}
+    <div class="list-group">
+      {% for video in videos %}
+      <div class="list-group-item list-group-item-action shadow-sm mb-3 rounded d-flex">
+        {% set thumb = 'thumbnails/' + video['thumbnail'] if video['thumbnail'] else 'videos/' + video['filename'] %}
+        <img src="{{ url_for('static', filename=thumb) }}"
+             alt="썸네일"
+             class="rounded me-3"
+             style="width: 200px; height: 120px; object-fit: cover;">
+
+        <div class="flex-grow-1">
+          <h5 class="mb-1">{{ video['title'] }}</h5>
+          <p class="mb-1 text-muted">
+            👨‍🏫 {{ video['nickname'] }} &nbsp;&nbsp;
+            📅 {{ video['created_at'][:10] }} &nbsp;&nbsp;
+            ⏱ {{ video['duration'] or '길이 정보 없음' }}
+          </p>
+          <p class="mb-2">{{ video['description'] }}</p>
+
+          <a href="{{ url_for('watch_video', video_id=video['id']) }}" class="btn btn-primary btn-sm">영상 보기</a>
+
+          {% if session.user.role == 'superadmin' or session.user.id == video['uploader_id'] %}
+            <a href="{{ url_for('edit_video', video_id=video['id']) }}" class="btn btn-outline-secondary btn-sm ms-2">수정</a>
+            <form action="{{ url_for('delete_video', video_id=video['id']) }}" method="POST" style="display:inline;">
+              <button type="submit" class="btn btn-outline-danger btn-sm ms-1"
+                      onclick="return confirm('정말 삭제할까요?');">삭제</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">등록된 영상이 없습니다.</p>
+  {% endif %}
+</div>
+{% endblock %}

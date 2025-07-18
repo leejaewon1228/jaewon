@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>관리자 대시보드</h2>
+
+<h4>유저 목록</h4>
+<table class="table">
+  <thead><tr><th>ID</th><th>이메일</th><th>구독 상태</th></tr></thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.id }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ 'O' if u.is_paid else 'X' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h4>구독 코드 발급</h4>
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label">유저</label>
+    <select name="user_id" class="form-select">
+      {% for u in users %}
+      <option value="{{ u.id }}">{{ u.email }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">유효기간(일수)</label>
+    <input type="number" name="days" class="form-control" value="7" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">최대 사용횟수</label>
+    <input type="number" name="max_uses" class="form-control" value="1" required>
+  </div>
+  <button type="submit" class="btn btn-success">코드 발급</button>
+</form>
+
+<h4>발급된 코드</h4>
+<table class="table">
+  <thead><tr><th>코드</th><th>이메일</th><th>생성일</th><th>만료일</th><th>사용수</th><th>최대</th></tr></thead>
+  <tbody>
+    {% for c in codes %}
+    <tr>
+      <td>{{ c.code }}</td>
+      <td>{{ c.email }}</td>
+      <td>{{ c.created_at }}</td>
+      <td>{{ c.expires_at }}</td>
+      <td>{{ c.used_count }}</td>
+      <td>{{ c.max_uses }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+{% if session.user.role == 'superadmin' %}
+<hr>
+<h4>관리자 권한 관리</h4>
+<table class="table">
+  <thead><tr><th>이메일</th><th>현재 권한</th><th>조작</th></tr></thead>
+  <tbody>
+    {% for u in users %}
+      {% if u.role != 'superadmin' %}
+      <tr>
+        <td>{{ u.email }}</td>
+        <td>{{ u.role }}</td>
+        <td>
+          <form method="post" class="d-inline">
+            <input type="hidden" name="target_id" value="{{ u.id }}">
+            {% if u.role == 'admin' %}
+              <input type="hidden" name="action" value="revoke_admin">
+              <button class="btn btn-outline-danger btn-sm">권한 회수</button>
+            {% else %}
+              <input type="hidden" name="action" value="make_admin">
+              <button class="btn btn-outline-primary btn-sm">관리자 임명</button>
+            {% endif %}
+          </form>
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>구독 코드 입력</h2>
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label">구독 코드</label>
+    <input type="text" name="code" class="form-control" required>
+  </div>
+  <button type="submit" class="btn btn-primary">인증</button>
+</form>
+{% endblock %}

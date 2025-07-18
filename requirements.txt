@@ -1,0 +1,5 @@
+Flask==2.2.5
+moviepy==1.0.3
+gunicorn
+Werkzeug
+python-dotenv

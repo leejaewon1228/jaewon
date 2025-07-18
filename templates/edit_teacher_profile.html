@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}내 소개 수정{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h3>📝 나의 소개 페이지 작성</h3>
+  <form method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label">프로필 사진</label><br>
+      {% if user['profile_image'] %}
+        <img src="{{ url_for('static', filename='profiles/' + user['profile_image']) }}" style="width:150px;" class="rounded mb-2"><br>
+      {% endif %}
+      <input type="file" name="image" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">자기소개 / 약력</label>
+      <textarea name="bio" class="form-control" rows="6">{{ user['bio'] or '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">저장하기</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+
+  <div class="card shadow border-0 mb-4">
+    <div class="row g-0 align-items-center">
+      
+      <!-- 썸네일 or 영상 -->
+      <div class="col-md-5">
+        {% if video['is_premium'] == 1 and (not session.user or session.user.role not in ['premium', 'admin', 'teacher', 'superadmin']) %}
+          <img src="{{ url_for('static', filename='thumbnails/' + video['thumbnail']) }}" class="img-fluid rounded-start" style="height: 100%; object-fit: cover;" alt="썸네일">
+        {% else %}
+          <video controls class="w-100 rounded-start">
+            <source src="{{ url_for('static', filename='videos/' + video['filename']) }}" type="video/mp4">
+            브라우저가 video 태그를 지원하지 않습니다.
+          </video>
+        {% endif %}
+      </div>
+
+      <!-- 오른쪽: 제목, 업로더, 날짜, 설명, 자료파일 -->
+      <div class="col-md-7">
+        <div class="card-body">
+          <h4 class="card-title fw-bold">{{ video['title'] }}</h4>
+          <p class="card-text text-muted mb-1">👨‍🏫 {{ video['nickname'] }}</p>
+          <p class="card-text text-muted">📅 {{ video['created_at'][:10] }}</p>
+          
+          {% if video['is_premium'] == 0 or (session.user and session.user.role in ['premium', 'admin', 'teacher', 'superadmin']) %}
+            <p class="card-text mt-3">{{ video['description'] }}</p>
+
+            {% if video['material_file'] %}
+              <p class="card-text mt-3">
+                📄 <a href="{{ url_for('static', filename='materials/' + video['material_file']) }}" download>
+                  학습 자료 다운로드 ({{ video['material_file'] }})
+                </a>
+              </p>
+            {% endif %}
+          {% endif %}
+          
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

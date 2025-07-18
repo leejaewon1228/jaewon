@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}선생님 소개{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">👩‍🏫 선생님 소개</h2>
+
+  {% if session.user and session.user.role in ['admin', 'teacher', 'superadmin'] %}
+    <div class="mb-4 text-end">
+      <a href="/teacher/profile/edit" class="btn btn-success">➕ 내 소개 작성하기</a>
+    </div>
+  {% endif %}
+
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for t in teachers %}
+    <div class="col">
+      <div class="card h-100 shadow-sm">
+        {% if t.profile_image %}
+        <img src="{{ url_for('static', filename='profiles/' + t.profile_image) }}" class="card-img-top" style="height: 350px; width: 100%; object-fit: cover; object-position: top;">
+        {% else %}
+        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 350px;">No Image</div>
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ t.nickname }} 선생님</h5>
+          <p class="card-text text-truncate" style="max-height: 60px;">{{ t.bio }}</p>
+          <a href="/teacher/{{ t.id }}" class="btn btn-outline-primary mt-2 w-100">자세히 보기</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

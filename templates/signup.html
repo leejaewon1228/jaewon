@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef1f4;
+      padding: 30px;
+    }
+    .signup-box {
+      background: #fff;
+      padding: 30px 40px;
+      max-width: 500px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px;
+      width: 100%;
+      background-color: #2196F3;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .nav {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #333;
+      font-size: 0.9em;
+    }
+    ul {
+      margin-top: 15px;
+      padding-left: 20px;
+      color: #d9534f;
+    }
+    small {
+      display: block;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-box">
+    <h2>회원가입</h2>
+
+    <form method="post">
+      <input type="hidden" name="action" value="send_code">
+      <div class="form-group">
+        <input type="email" name="email" placeholder="이메일" value="{{ request.form.email or session.verify_email or '' }}" required>
+        <button type="submit" {% if session.email_verified %}disabled{% endif %}>인증번호 보내기</button>
+      </div>
+    </form>
+
+    <form method="post">
+      <input type="hidden" name="action" value="verify_code">
+      <div class="form-group">
+        <input type="text" name="verify_code" placeholder="인증번호" value="{{ request.form.verify_code or '' }}" {% if not session.verify_email or session.email_verified %}disabled{% endif %}>
+        <button type="submit" {% if not session.verify_email or session.email_verified %}disabled{% endif %}>인증번호 확인</button>
+      </div>
+    </form>
+
+    <form method="post">
+      <input type="hidden" name="action" value="check_nickname">
+      <div class="form-group">
+        <input type="text" name="nickname" placeholder="닉네임" value="{{ request.form.nickname or session.nickname or '' }}" {% if not session.email_verified or session.nickname_verified %}disabled{% endif %}>
+        <button type="submit" {% if not session.email_verified or session.nickname_verified %}disabled{% endif %}>닉네임 중복 확인</button>
+      </div>
+    </form>
+
+    <form method="post" onsubmit="return validatePassword();">
+      <input type="hidden" name="action" value="register">
+      <div class="form-group">
+        <input type="password" id="password" name="password" placeholder="비밀번호" {% if not session.nickname_verified %}disabled{% endif %}>
+        <small id="pw-warning" style="color: #d9534f; display: none;">비밀번호는 8자 이상이어야 합니다.</small>
+        <button type="submit" id="register-btn" {% if not session.nickname_verified %}disabled{% endif %}>회원가입 완료</button>
+      </div>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <div class="nav">
+      <a href="/">홈</a> | <a href="/free-video">무료 영상</a> | <a href="/premium-video">프리미엄 영상</a> | <a href="/qna">Q&A</a>
+    </div>
+  </div>
+
+  <script>
+    function validatePassword() {
+      const password = document.getElementById('password').value;
+      const warning = document.getElementById('pw-warning');
+
+      if (password.length < 8) {
+        warning.style.display = 'block';
+        return false;
+      }
+      warning.style.display = 'none';
+      return true;
+    }
+  </script>
+</body>
+</html>
+

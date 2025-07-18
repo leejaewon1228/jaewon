@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2>{{ '💎 프리미엄' if is_premium else '🎥 무료' }} 영상 업로드</h2>
+  <form action="" method="post" enctype="multipart/form-data" class="mt-4">
+    <div class="mb-3">
+      <label for="title" class="form-label">제목</label>
+      <input type="text" class="form-control" id="title" name="title" required>
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">설명</label>
+      <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="video" class="form-label">영상 파일 (MP4)</label>
+      <input class="form-control" type="file" id="video" name="video" accept=".mp4" required>
+    </div>
+    <div class="mb-3">
+      <label for="thumbnail" class="form-label">썸네일 이미지 (선택)</label>
+      <input class="form-control" type="file" id="thumbnail" name="thumbnail" accept="image/*">
+    </div>
+    <div class="mb-3">
+      <label for="material" class="form-label">자료 파일 (선택, PDF/PPT/ZIP)</label>
+      <input class="form-control" type="file" id="material" name="material" accept=".pdf,.ppt,.pptx,.zip">
+    </div>
+    <button type="submit" class="btn btn-primary">업로드</button>
+  </form>
+</div>
+{% endblock %}

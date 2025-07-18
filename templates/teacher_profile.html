@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}{{ user['nickname'] }} 선생님 소개{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card mx-auto" style="max-width: 700px;">
+    <div class="row g-0">
+      <div class="col-md-5">
+        {% if user['profile_image'] %}
+          <img src="{{ url_for('static', filename='profiles/' + user['profile_image']) }}" class="img-fluid w-100 h-100" style="object-fit: cover;">
+        {% else %}
+          <div class="bg-light d-flex align-items-center justify-content-center" style="height: 100%; min-height: 300px;">No Image</div>
+        {% endif %}
+      </div>
+      <div class="col-md-7">
+        <div class="card-body">
+          <h3 class="card-title">{{ user['nickname'] }} 선생님</h3>
+          <hr>
+          <h5 class="mb-3">📚 소개</h5>
+          <p class="card-text">{{ user['bio'] or '소개글이 아직 없습니다.' }}</p>
+
+          {% if session.user and (session.user.id == user['id'] or session.user.role == 'superadmin') %}
+            <div class="mt-4 d-flex justify-content-end gap-2">
+              <a href="/teacher/profile/edit" class="btn btn-outline-secondary">✏️ 수정</a>
+              <form method="POST" action="/teacher/profile/delete" onsubmit="return confirm('정말 삭제하시겠습니까?')">
+                <button type="submit" class="btn btn-outline-danger">🗑️ 삭제</button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

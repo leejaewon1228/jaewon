@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>QnA 게시판</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f9f9f9;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+    }
+
+    .qna-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .btn-custom {
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .btn-write {
+      background-color: #4e73df;
+      color: white;
+    }
+
+    .btn-write:hover {
+      background-color: #2e59d9;
+    }
+
+    .btn-home {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-home:hover {
+      background-color: #5a6268;
+    }
+
+    .qna-list {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    .qna-list a.qna-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 20px;
+      border-bottom: 1px solid #eee;
+      transition: background 0.15s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .qna-list a.qna-item:hover {
+      background-color: #f1f4ff;
+    }
+
+    .qna-title {
+      font-weight: 600;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .qna-meta {
+      font-size: 0.85rem;
+      color: #888;
+      text-align: right;
+      min-width: 200px;
+    }
+
+    .badge-answer {
+      font-size: 0.75rem;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="qna-header">
+      <h2>Q&A 게시판</h2>
+      <div>
+        <a href="/" class="btn btn-home btn-custom me-2">홈으로</a>
+        <a href="/qna/write" class="btn btn-write btn-custom">✏️ 글쓰기</a>
+      </div>
+    </div>
+
+    <div class="qna-list">
+      {% for post in posts %}
+        <a href="/qna/{{ post.id }}" class="qna-item">
+          <div class="qna-title">
+            {{ post.title }}{% if post.is_private %} 🔒{% endif %}
+            {% if post.has_answer %}
+              <span class="badge bg-success badge-answer">답변 완료</span>
+            {% endif %}
+          </div>
+          <div class="qna-meta">
+            {{ post.nickname }} · {{ post.created_at[:10] }}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>

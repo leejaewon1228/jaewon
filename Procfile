@@ -1,0 +1,1 @@
+web: gunicorn jaewon_root.app:app

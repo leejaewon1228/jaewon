@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>마이페이지</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Pretendard', sans-serif;
+    }
+    .container {
+      max-width: 700px;
+      margin: 60px auto;
+    }
+    .section-box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+    h4 {
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .btn-save, .btn-delete {
+      width: 100%;
+      padding: 10px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-save {
+      background-color: #4e73df;
+      color: white;
+    }
+    .btn-save:hover {
+      background-color: #2e59d9;
+    }
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+    .btn-delete:hover {
+      background-color: #bb2d3b;
+    }
+    .btn-home {
+      background-color: #6c757d;
+      color: white;
+      margin-bottom: 30px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .btn-home:hover {
+      background-color: #5a6268;
+      text-decoration: none;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th {
+      background-color: #f1f1f1;
+    }
+    .action-form {
+      display: inline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="btn-home">← 홈으로</a>
+    <h2>마이페이지</h2>
+
+    <form id="nickname-form" action="/mypage/apply_nickname" method="POST" onsubmit="return validateAndSubmit(event)">
+      <div class="section-box">
+        <h4>닉네임 변경</h4>
+        <input
+          type="text"
+          name="nickname"
+          id="nickname"
+          value="{{ session.temp_nickname or current_nickname }}"
+          placeholder="새 닉네임을 입력하세요"
+          required
+        />
+        <button type="submit" class="btn-save">변경하기</button>
+      </div>
+    </form>
+
+    <form
+      action="/mypage/delete_account"
+      method="POST"
+      onsubmit="return confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');"
+      class="section-box"
+    >
+      <h4>계정 삭제</h4>
+      <p class="text-danger">
+        ⚠️ 계정을 삭제하면 작성한 질문과 답변이 모두 삭제되며, 복구할 수 없습니다.
+      </p>
+      <button type="submit" class="btn-delete">계정 삭제하기</button>
+    </form>
+
+    {% if session['user']['role'] == 'superadmin' %}
+    <div class="section-box">
+      <h4>가입자 목록 (관리자 권한 설정)</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>닉네임</th>
+            <th>권한</th>
+            <th>관리</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ u.nickname }}</td>
+            <td>
+              {% if u.role == 'superadmin' %}
+                총관리자
+              {% elif u.role == 'admin' %}
+                선생님
+              {% elif u.role == 'user' and u.is_paid == 1 %}
+                프리미엄학생
+              {% elif u.role == 'user' and u.is_paid == 0 %}
+                학생
+              {% else %}
+                알 수 없음
+              {% endif %}
+            </td>
+            <td>
+              {% if u.role != 'superadmin' %}
+                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                  <form method="post" action="/mypage/set_admin" class="action-form">
+                    <input type="hidden" name="user_id" value="{{ u.id }}">
+                    <input type="hidden" name="new_role" value="teacher">
+                    <button class="btn btn-sm btn-outline-primary">선생님</button>
+                  </form>
+                  <form method="post" action="/mypage/set_admin" class="action-form">
+                    <input type="hidden" name="user_id" value="{{ u.id }}">
+                    <input type="hidden" name="new_role" value="premium">
+                    <button class="btn btn-sm btn-outline-success">프리미엄학생</button>
+                  </form>
+                  <form method="post" action="/mypage/set_admin" class="action-form">
+                    <input type="hidden" name="user_id" value="{{ u.id }}">
+                    <input type="hidden" name="new_role" value="student">
+                    <button class="btn btn-sm btn-outline-secondary">학생</button>
+                  </form>
+                  <form method="post" action="/mypage/delete_user" class="action-form" onsubmit="return confirm('정말 이 사용자를 탈퇴시키겠습니까?');">
+                    <input type="hidden" name="user_id" value="{{ u.id }}">
+                    <button class="btn btn-sm btn-outline-danger">탈퇴</button>
+                  </form>
+                </div>
+              {% else %}
+                <em>총관리자</em>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    function validateAndSubmit(event) {
+      event.preventDefault();
+      const nickname = document.getElementById("nickname").value.trim();
+      if (!nickname) {
+        alert("닉네임을 입력해주세요.");
+        return false;
+      }
+      fetch("/mypage/apply_nickname", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "nickname=" + encodeURIComponent(nickname),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            alert("닉네임이 성공적으로 변경되었습니다.");
+            location.reload();
+          } else {
+            alert(data.message || "닉네임 변경에 실패했습니다.");
+          }
+        })
+        .catch(() => alert("서버 오류가 발생했습니다."));
+      return false;
+    }
+  </script>
+</body>
+</html>
